@@ -78,14 +78,53 @@ let myMap = L.map("map", {
   layers: [street, depthLocations]
 });
 
+
 L.control.layers(baseMaps, overlayMaps, {
   collapsed: false
 }).addTo(myMap)
 
 
 
+function markerColor(dpth) {
+  if (dpth <= 0) {
+      return shade = "#ffffff"
+  } else if (dpth <= 40) {
+      return "#ffaaff"
+  } else if (dpth <= 70) {
+      return "#ff90ff"
+  } else if (dpth <= 90) {
+      return "#ccb3ff"
+  } else if (dpth <= 170) {
+    return "#8080ff"  
+  } else {
+    return "#0073e6"
+  }
+};
 
-})
+var legend = L.control({ position: "bottomright" });
+  legend.onAdd = function(map) {
+      var div = L.DomUtil.create("div", "info legend");
+      depths = [0, 40, 70, 90, 170];
+      labels = [];
+      legendInfo = "<strong>Depth</strong>";
+      div.innerHTML = legendInfo;
+      // push to labels array as list item
+      for (var i = 0; i < depths.length; i++) {
+          labels.push('<li style="background-color:' + markerColor(depths[i] + 1) + '"> <span>' + depths[i] + (depths[i + 1]
+               ? '&ndash;' + depths[i + 1] + '' : '+') + '</span></li>');
+      }
+      // add label items to the div under the <ul> tag
+      div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+      return div;
+  };
+  // Add legend to the map
+  legend.addTo(myMap);
+
+
+
+
+});
+
 
  
 
@@ -96,6 +135,5 @@ L.control.layers(baseMaps, overlayMaps, {
         
         return colorRNGE(depth);
  }
-
 
 
